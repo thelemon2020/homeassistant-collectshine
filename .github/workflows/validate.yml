@@ -22,14 +22,10 @@ jobs:
   hacs:
     name: HACS
     runs-on: ubuntu-latest
-    # Advisory, for one remaining reason: the `brands` check requires this integration to be
-    # listed in the home-assistant/brands repository, which is a separate upstream pull request
-    # carrying icon and logo assets. Everything else here passes.
-    #
-    # Make this blocking once that PR lands — at which point a red X means something again.
-    #
-    # hassfest is the check that actually validates the integration, and it blocks today.
-    continue-on-error: true
+    # Blocking. Every check passes, including brands — satisfied by the assets inside the
+    # integration, which HACS looks for before falling back to the home-assistant/brands
+    # repository. Submitting to that repository is still worth doing for the default store, but
+    # it is no longer what stands between this and a green run.
     steps:
       - uses: actions/checkout@v4
       - uses: hacs/action@main
