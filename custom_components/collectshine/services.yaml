@@ -1,0 +1,14 @@
+find_record:
+  name: Find a record
+  description: >-
+    Find a record in the collection and light its LED on the shelf. Takes whatever was said or
+    typed — the base station does the matching, so filler words and a misheard artist name are
+    expected rather than a problem.
+  fields:
+    query:
+      name: Query
+      description: The record to find, in ordinary words.
+      required: true
+      example: kind of blue by miles davis
+      selector:
+        text:

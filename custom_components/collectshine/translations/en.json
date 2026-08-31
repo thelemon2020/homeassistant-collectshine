@@ -1,0 +1,71 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Connect to a base station",
+        "description": "Enter the address of your CollectShine base station. Its name on the network works too, for example collectshine-3f2a.local.",
+        "data": { "host": "Host" }
+      },
+      "zeroconf_confirm": {
+        "title": "CollectShine found",
+        "description": "Set up {name} at {host}, running firmware {firmware}?"
+      },
+      "token": {
+        "title": "Agent token",
+        "description": "In the CollectShine app, go to Settings → AI agent access and create a token. It is shown once. {error_detail}",
+        "data": { "token": "Token" }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect to {name}",
+        "description": "This base station no longer accepts the saved token. Create a new one in the CollectShine app under Settings → AI agent access. {error_detail}",
+        "data": { "token": "Token" }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the base station at that address.",
+      "invalid_auth": "The base station rejected that token.",
+      "subscription_required": "This base station will not accept agent access right now.",
+      "unsupported_version": "This base station is newer than the integration. Update the CollectShine integration."
+    },
+    "abort": {
+      "already_configured": "This base station is already set up.",
+      "cannot_connect": "Could not reach the base station.",
+      "unsupported_version": "This base station is newer than the integration. Update the CollectShine integration.",
+      "reauth_successful": "Reconnected to the base station."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CollectShine options",
+        "data": { "power_on": "Switch the shelf lights on when finding a record" },
+        "data_description": {
+          "power_on": "A spotlight on a shelf whose lights are off is accepted by the hardware and shows nothing, so leaving this on is usually what you want."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "now_playing": { "name": "Now playing" },
+      "last_played": { "name": "Last played" },
+      "collection_size": { "name": "Collection size" }
+    },
+    "binary_sensor": { "flip_due": { "name": "Flip due" } },
+    "light": { "shelf": { "name": "Shelf" } },
+    "button": {
+      "dig": { "name": "Dig" },
+      "clear_highlight": { "name": "Clear highlight" }
+    }
+  },
+  "services": {
+    "find_record": {
+      "name": "Find a record",
+      "description": "Find a record in the collection and light it on the shelf.",
+      "fields": {
+        "query": { "name": "Query", "description": "The record to find, in ordinary words." }
+      }
+    }
+  }
+}

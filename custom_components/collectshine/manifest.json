@@ -1,0 +1,16 @@
+{
+  "domain": "collectshine",
+  "name": "CollectShine",
+  "codeowners": ["@thelemon2020"],
+  "config_flow": true,
+  "documentation": "https://github.com/thelemon2020/homeassistant-collectshine",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/thelemon2020/homeassistant-collectshine/issues",
+  "requirements": [],
+  "version": "0.1.0",
+  "zeroconf": [
+    { "type": "_collectshine._tcp.local." },
+    { "type": "_http._tcp.local.", "name": "collectshine*" }
+  ]
+}
