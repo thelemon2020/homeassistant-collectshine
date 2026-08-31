@@ -22,19 +22,13 @@ jobs:
   hacs:
     name: HACS
     runs-on: ubuntu-latest
-    # Advisory while this repository is private, and deliberately so rather than deleted.
+    # Advisory, for one remaining reason: the `brands` check requires this integration to be
+    # listed in the home-assistant/brands repository, which is a separate upstream pull request
+    # carrying icon and logo assets. Everything else here passes.
     #
-    # Several HACS checks — hacsjson, integration_manifest, brands — read the repository back
-    # through the GitHub API rather than from the checkout, and those calls return nothing for a
-    # private repository however the workflow token is passed. The action reports the empty
-    # response as a malformed file, which is a misleading way to say 404, so a red X here says
-    # nothing about whether the files are actually correct.
+    # Make this blocking once that PR lands — at which point a red X means something again.
     #
-    # hassfest is the job that genuinely validates this integration, and it blocks.
-    #
-    # Make this blocking again when the repository goes public. At that point `license` and
-    # `brands` become real work: HACS requires a licence, and the integration must be added to
-    # the home-assistant/brands repository for an icon.
+    # hassfest is the check that actually validates the integration, and it blocks today.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
