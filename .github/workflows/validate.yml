@@ -24,6 +24,11 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+        env:
+          # The manifest check reads the file back through the GitHub API. On a private
+          # repository that call is unauthenticated without this and returns nothing, which the
+          # action reports as a malformed manifest rather than as a permissions problem.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   ruff:
     name: ruff
