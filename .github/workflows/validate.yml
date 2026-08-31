@@ -19,15 +19,26 @@ jobs:
   hacs:
     name: HACS
     runs-on: ubuntu-latest
+    # Advisory while this repository is private, and deliberately so rather than deleted.
+    #
+    # Several HACS checks — hacsjson, integration_manifest, brands — read the repository back
+    # through the GitHub API rather than from the checkout, and those calls return nothing for a
+    # private repository however the workflow token is passed. The action reports the empty
+    # response as a malformed file, which is a misleading way to say 404, so a red X here says
+    # nothing about whether the files are actually correct.
+    #
+    # hassfest is the job that genuinely validates this integration, and it blocks.
+    #
+    # Make this blocking again when the repository goes public. At that point `license` and
+    # `brands` become real work: HACS requires a licence, and the integration must be added to
+    # the home-assistant/brands repository for an icon.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: hacs/action@main
         with:
           category: integration
         env:
-          # The manifest check reads the file back through the GitHub API. On a private
-          # repository that call is unauthenticated without this and returns nothing, which the
-          # action reports as a malformed manifest rather than as a permissions problem.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   ruff:
