@@ -3,6 +3,9 @@ name: Validate
 on:
   push:
   pull_request:
+  # Both validators track upstream releases rather than this repository, so being able to re-run
+  # them without an empty commit is worth the two lines.
+  workflow_dispatch:
   schedule:
     # Both validators track Home Assistant releases, so a component that passed last month can
     # fail today without anything here changing. Weekly is early enough to hear about it.
