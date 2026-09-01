@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import Final
+from urllib.parse import quote
 
 DOMAIN: Final = "collectshine"
 
@@ -30,6 +31,26 @@ INTENT_FIND_RECORD: Final = "CollectShineFindRecord"
 
 SERVICE_FIND_RECORD: Final = "find_record"
 ATTR_QUERY: Final = "query"
+
+# HACS installs `custom_components/` and nothing else, so it cannot deliver the sentences that
+# make the intent above reachable by voice — that step is manual for every owner, on a system
+# with no filesystem access out of the box. A blueprint is the way out: one click imports it,
+# and a sentence trigger needs no files at all. Hence the nudge in onboarding.py, which is the
+# only thing standing between a finished config flow and an owner who never learns voice exists.
+BLUEPRINT_URL: Final = (
+    "https://github.com/thelemon2020/homeassistant-collectshine/blob/main/"
+    "blueprints/automation/collectshine/find_record.yaml"
+)
+
+# Derived rather than written out twice: the encoded form is unreadable, and a link that quietly
+# points at a different file than the one above is the kind of thing nobody notices for months.
+BLUEPRINT_IMPORT_URL: Final = (
+    "https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=" + quote(BLUEPRINT_URL, safe="")
+)
+
+# Written into the config entry once the owner has been told. Kept in `data` rather than
+# `options` because options are the owner's to change and this is bookkeeping.
+DATA_SENTENCES_PROMPTED: Final = "sentences_prompted"
 
 # mDNS TXT keys published by App\Console\Commands\InstallCommand::avahiServiceFile().
 TXT_API: Final = "api"

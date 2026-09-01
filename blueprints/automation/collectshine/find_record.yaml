@@ -1,0 +1,66 @@
+blueprint:
+  name: CollectShine — find a record by name
+  description: >-
+    Ask for a record out loud and watch its LED come on.
+
+
+    Home Assistant matches one of the sentences below, hands the words to your base station, and
+    the base station decides which record was meant — against your real collection, so a filler
+    word or a misheard artist name is expected rather than a problem. What it says back is its
+    own answer, including "I found a few" and "the shelf lights are off".
+
+
+    Add your own phrasings below. Avoid a bare "play {name}" — it is greedy and will swallow
+    utterances meant for your media players.
+  domain: automation
+  homeassistant:
+    min_version: "2024.12.0"
+  source_url: https://github.com/thelemon2020/homeassistant-collectshine/blob/main/blueprints/automation/collectshine/find_record.yaml
+  input:
+    sentences:
+      name: Sentences
+      description: >-
+        What you can say. {name} is the record, and stands for any words at all. Square brackets
+        mark optional words, so "find [me] [the] [record] {name}" also matches "find Kind of Blue".
+      default:
+        - "find [me] [the] [record] {name}"
+        - "find [me] {name} on [the] [record] shelf"
+        - "where is [my] [copy of] {name}"
+        - "light up {name}"
+        - "put {name} on the record player"
+      selector:
+        text:
+          multiple: true
+
+# Queued rather than single: asking twice in quick succession should answer twice, not log a
+# warning and drop the second question on the floor.
+mode: queued
+max: 3
+
+triggers:
+  - trigger: conversation
+    command: !input sentences
+
+actions:
+  # The raw transcript, not the tidied slot value. The matching happens on the base station
+  # against the real collection, which is the whole reason it can recognise "john coltraine" —
+  # so anything that cleans the words up first is working against it.
+  #
+  # `trigger.sentence` is the fallback for a sentence somebody added without a {name} in it.
+  - variables:
+      spoken: >-
+        {{ (trigger.details.name.text if 'name' in (trigger.details | default({}))
+            else trigger.sentence) | trim }}
+
+  - condition: template
+    value_template: "{{ spoken != '' }}"
+
+  - action: collectshine.find_record
+    data:
+      query: "{{ spoken }}"
+    response_variable: found
+
+  # Spoken verbatim. The base station decides both which record it is and how sure it is, and
+  # this sentence is the visible half of that decision — a shelf that is switched off says so
+  # here and nowhere else, so never replace this with a cheerful fixed string.
+  - set_conversation_response: "{{ found.speech }}"

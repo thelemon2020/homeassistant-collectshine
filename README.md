@@ -43,8 +43,31 @@ you can revoke it there at any time.
 
 ## Talking to it
 
-The integration registers the intent; the sentences that reach it are yours to write, because a
-custom integration cannot add sentences to Assist's matcher. Create
+Assist has to be told which sentences to listen for, and an integration cannot add them to its
+matcher. So this part is a click rather than a file:
+
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fthelemon2020%2Fhomeassistant-collectshine%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fcollectshine%2Ffind_record.yaml)
+
+Import it, create an automation from it, and try *"find Kind of Blue"*. The sentences are an input
+on the blueprint, so you can add your own phrasings in the automation editor without touching a
+file. No restart — a new automation is live as soon as it is saved.
+
+The blueprint hands the base station the **raw transcript**, filler words and all. That is
+deliberate: the matching happens there, against your actual collection, which is why a misheard
+artist name can still be recognised. It speaks the base station's own answer back, so *"I found a
+few"* and *"the shelf lights are off"* reach you instead of a cheerful *"Done"*.
+
+> ⚠️ **Don't add a bare `"play {name}"`.** It is greedy, and it will swallow utterances meant for
+> your media players. Prefer a bounded phrase like `"put {name} on the record player"`.
+
+### Using an LLM voice assistant instead
+
+Nothing to set up. The integration registers a `CollectShineFindRecord` intent, and an LLM-backed
+conversation agent can reach it from your own words without any sentences at all.
+
+### Writing the sentences yourself
+
+If you would rather not use the blueprint, the older route still works — create
 `config/custom_sentences/en/collectshine.yaml`:
 
 ```yaml
@@ -65,14 +88,8 @@ lists:
     wildcard: true
 ```
 
-Restart, and try *"find Kind of Blue"*.
-
-`wildcard: true` hands the base station the raw transcript, filler words and all. That is
-deliberate — the matching happens there, against your actual collection, where a misheard artist
-name can still be recognised.
-
-> ⚠️ **Don't add a bare `"play {name}"`.** It is greedy, and it will swallow utterances meant for
-> your media players. Prefer a bounded phrase like `"put {name} on the record player"`.
+The `en` subfolder is required — a file one level up is silently never loaded. Then call the
+`conversation.reload` action, and try *"find Kind of Blue"*.
 
 ### From an automation
 
