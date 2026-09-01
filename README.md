@@ -99,7 +99,7 @@ action:
     data:
       query: "blue train by john coltrane"
     response_variable: found
-  - if: "{{ found.outcome == 'ambiguous' }}"
+  - if: "{{ not found.lit }}"
     then:
       - action: notify.mobile_app
         data:
@@ -109,6 +109,24 @@ action:
 `outcome` is one of `matched`, `ambiguous`, `not_found` or `empty_query`. When several records fit,
 nothing is lit and `speech` names the choices — say it again with the artist and the second attempt
 will land.
+
+**`outcome` is not the same as "you can see it."** It says the words resolved to one record, which
+is a decision about the sentence, not an observation of the shelf. Three things can still leave you
+looking at an unchanged wall, and each has a different fix:
+
+| `spotlight` | `lights_on` | What happened |
+|---|---|---|
+| `lit` | `true` | The record is lit. |
+| `lit` | `false` | Master power is off, so the spotlight is stored and shows nothing. |
+| `not_on_shelf` | either | The record is in no segment — there is no light to turn on. Shelve it in the app. |
+| `unreachable` | either | Its controller could not be reached. |
+
+`found.lit` folds all of that into the one boolean worth branching on, and is deliberately false
+when it cannot be sure — including against a base station older than 0.61.0, which sent no
+`spotlight` field and sometimes reported success when nothing had happened.
+
+`speech` always says which of these it was, so passing it straight to a notification (as above)
+tells you what went wrong without decoding anything.
 
 ### Through Alexa or Google
 

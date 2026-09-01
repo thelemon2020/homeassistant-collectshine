@@ -125,9 +125,25 @@ class FindResult:
     candidates: list[Record]
     lights_on: bool | None
 
+    #: Whether the record itself got a light, which is a different question from `lights_on` —
+    #: that one is only about whether the strip has power. "lit", "not_on_shelf", "unreachable",
+    #: or None from a base station older than 0.61.0, which did not report it and sometimes
+    #: claimed success when nothing had happened.
+    spotlight: str | None
+
     @property
     def matched(self) -> bool:
         return self.outcome == "matched"
+
+    @property
+    def lit(self) -> bool:
+        """Whether the owner can actually expect to see something.
+
+        Deliberately conservative about the two unknowns. An older base station sends no
+        `spotlight` at all, and its "matched" has always been an intention rather than an
+        observation, so it is not treated as proof that a light came on.
+        """
+        return self.matched and self.spotlight == "lit" and bool(self.lights_on)
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> FindResult:
@@ -141,6 +157,7 @@ class FindResult:
                 if (record := Record.from_json(candidate)) is not None
             ],
             lights_on=data.get("lights_on"),
+            spotlight=(None if (raw := data.get("spotlight")) is None else str(raw)),
         )
 
 

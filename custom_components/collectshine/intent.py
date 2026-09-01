@@ -78,6 +78,8 @@ class FindRecordIntentHandler(intent.IntentHandler):
         response.async_set_speech_slots(
             {
                 "outcome": result.outcome,
+                "spotlight": result.spotlight,
+                "lit": result.lit,
                 "release_id": result.release.id if result.release else None,
                 "title": result.release.title if result.release else None,
                 "artist": result.release.artist if result.release else None,
@@ -96,6 +98,11 @@ async def async_setup_intents(hass: HomeAssistant) -> None:
 
         return {
             "outcome": result.outcome,
+            # `outcome` says the sentence was resolved to one record; these say whether the
+            # shelf actually showed it. An automation that lights a lamp or sends a notification
+            # on every "matched" fires just as happily over a record that was never lit.
+            "spotlight": result.spotlight,
+            "lit": result.lit,
             "speech": result.speech,
             "release": (
                 {
